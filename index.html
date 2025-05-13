@@ -1,0 +1,145 @@
+from pathlib import Path
+
+# HTML 파일을 완성된 코드로 생성
+html_code = """
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>성을 지켜라 게임</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 500px;
+            margin: 20px auto;
+            border: 3px solid #333;
+            overflow: hidden;
+            background-image: url('flower-background.png'); /* 꽃밭 배경 이미지 */
+            background-size: cover;
+            background-position: center;
+        }
+
+        .player {
+            position: absolute;
+            left: 200px;
+            bottom: 140px;
+            width: 60px;
+            height: 60px;
+            background-image: url('ntb-player.png'); /* 플레이어 이미지 */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: bottom 0.3s;
+        }
+
+        .enemy {
+            position: absolute;
+            bottom: 140px;
+            right: 50px;
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            border-radius: 50%;
+        }
+
+        #castle {
+            position: absolute;
+            left: 50px;
+            bottom: 100px;
+            width: 150px;
+            height: 200px;
+            background-color: #8B4513;
+            border: 2px solid #333;
+        }
+
+        #health-bar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 200px;
+            height: 20px;
+            background-color: #ccc;
+            border: 1px solid #000;
+        }
+
+        #health {
+            width: 100%;
+            height: 100%;
+            background-color: green;
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="castle"></div>
+        <div class="player"></div>
+        <div id="health-bar"><div id="health"></div></div>
+    </div>
+
+    <!-- 배경 음악 (사용자가 수동으로 듣게 유도) -->
+    <div style="text-align:center; margin-top:10px;">
+        🎵 <a href="https://www.mureka.ai/song-detail/TDTeLNXcfS6uzKFffiZiYv?is_from_share=1" target="_blank">배경음악과 함께 플레이</a>
+    </div>
+
+    <script>
+        const player = document.querySelector('.player');
+        let playerPos = 200;
+
+        // 키 입력 처리
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') playerPos -= 10;
+            if (e.key === 'ArrowRight') playerPos += 10;
+            playerPos = Math.max(0, Math.min(740, playerPos));
+            player.style.left = playerPos + 'px';
+        });
+
+        // 적 등장 및 이동
+        function spawnEnemy() {
+            const enemy = document.createElement('div');
+            enemy.classList.add('enemy');
+            enemy.style.right = '0px';
+            document.getElementById('game-container').appendChild(enemy);
+
+            let pos = 0;
+            function move() {
+                pos += 2;
+                enemy.style.right = pos + 'px';
+                if (pos < 800) {
+                    requestAnimationFrame(move);
+                } else {
+                    enemy.remove();
+                    damageCastle();
+                }
+            }
+            move();
+        }
+
+        function damageCastle() {
+            const health = document.getElementById('health');
+            let width = parseInt(health.style.width);
+            width = isNaN(width) ? 100 : width - 10;
+            health.style.width = width + '%';
+            if (width <= 0) alert("Game Over!");
+        }
+
+        setInterval(spawnEnemy, 2000);
+    </script>
+</body>
+</html>
+"""
+
+# 저장
+output_path = Path("/mnt/data/castle_defense_game.html")
+output_path.write_text(html_code, encoding="utf-8")
+output_path.name
